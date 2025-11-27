@@ -27,7 +27,6 @@ void printListLikeString(List l) {
         }
     }
     printf("\n");
-    
 }
 
 void printVectorInt(vector<int> &in) {

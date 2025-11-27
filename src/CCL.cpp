@@ -319,49 +319,73 @@ void CCL::push_front(Element e_, int q) {
 }
 
 void CCL::insertElement(int i_, Element e_) {
-    Node* tmp = this->first;
-    int q = tmp->getQuantity();
 
-    while (i_ > 0)
-    {
-        if (q - 1 == 0)
-        {
+    if (this->first == nullptr) {
+        Node* n = new Node(e_);
+        n->setNext(n);
+        n->setPrev(n);
+        this->first = n;
+        this->lenght = 1;
+    }
+    else if (i_ >= this->lenght) {
+        this->push_back(e_);
+    }
+    else {
+        Node* tmp = this->first;
+        int index = 0;
+
+        while (index + tmp->getQuantity() <= i_) {
+            index += tmp->getQuantity();
             tmp = tmp->getNext();
-            q = tmp->getQuantity();
-        }
-        else
-        {
-            q--;
         }
 
-        i_ --;
-    }
-    
-    if (tmp->getVal() == e_)
-    {
-        tmp->addQuantity(1);
-    }
-    else
-    {
-        Node* aux_node = new Node(e_);
-        Element aux_e = tmp->getVal();
+        int posInNode = i_ - index;
+        int q = tmp->getQuantity();
 
-        tmp->subsQuantity(q);
-        aux_node->setNext(tmp->getNext());
-        aux_node->setPrev(tmp);
-        tmp->setNext(aux_node);
+        if (tmp->getVal() == e_) {
+            tmp->addQuantity(1);
+            ++this->lenght;
+        } 
+        else if (posInNode == 0) {
+            Node* prev = tmp->getPrev();
+            if (prev->getVal() == e_) {
+                prev->addQuantity(1);
+            } else {
+                Node* n = new Node(e_);
+                n->setPrev(prev);
+                n->setNext(tmp);
+                prev->setNext(n);
+                tmp->setPrev(n);
+                if (tmp == this->first) {
+                    this->first = n;
+                }
+            }
+            ++this->lenght;
+        }
+        else {
+            int left = posInNode;
+            int rightC = q - posInNode;
 
-        tmp = tmp->getNext();
-        aux_node = new Node(aux_e);
+            Node* next = tmp->getNext();
+            tmp->setQuantity(left);
 
-        aux_node->setQuantity(q);
-        aux_node->setNext(tmp->getNext());
-        aux_node->setPrev(tmp);
-        tmp->setPrev(aux_node);
-        aux_node->getNext()->setPrev(aux_node);
-        this->lenght += 1;
+            Node* mid = new Node(e_);
+            Node* right = new Node(tmp->getVal(), rightC);
+
+            tmp->setNext(mid);
+            mid->setPrev(tmp);
+
+            mid->setNext(right);
+            right->setPrev(mid);
+
+            right->setNext(next);
+            next->setPrev(right);
+
+            ++this->lenght;
+        }    
     }
 }
+
 
 void CCL::removeFirstOcurrence(Element e_) {
     Node* tmp = this->first;
