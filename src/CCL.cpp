@@ -42,6 +42,159 @@ CCL::~CCL() = default;
 
 // Analizadores
 
+int CCL::getOcurrences(vector<Element> &v_) {
+    int ans = 0;
+    bool valid = true;
+
+    if (this->first == nullptr || v_.empty()) {
+        valid = false;
+    }
+
+    if (valid) {
+        std::list<Element> seq;
+        Node* tmp = this->first;
+        bool first_time = true;
+
+        while (first_time || tmp != this->first) {
+            first_time = false;
+            int q = tmp->getQuantity();
+            int i = 0;
+            while (i < q) {
+                seq.push_back(tmp->getVal());
+                i++;
+            }
+            tmp = tmp->getNext();
+        }
+
+        int m = v_.size();
+        int n = seq.size();
+
+        if (m > n) {
+            valid = false;
+        }
+
+        if (valid) {
+            list<Element>::iterator itStart = seq.begin();
+            while (itStart != seq.end()) {
+                list<Element>::iterator it = itStart;
+                int k = 0;
+                while (it != seq.end() && k < m) {
+                    if (*it == v_[k]) {
+                        k++;
+                    }
+                    ++it;
+                }
+                if (k == m) {
+                    ans++;
+                    itStart = it;
+                } else {
+                    ++itStart;
+                }
+            }
+        }
+    }
+    return ans;
+}
+
+int CCL::getIndexFirstOcurrence(std::vector<Element> &v_) {
+    int ans = -1;
+    bool valid = true;
+
+    if (this->first == nullptr || v_.empty()) {
+        valid = false;
+    }
+
+    if (valid) {
+        list<Element> seq;
+        Node* tmp = this->first;
+        bool first_time = true;
+
+        while (first_time || tmp != this->first) {
+            first_time = false;
+            int q = tmp->getQuantity();
+            int i = 0;
+            while (i < q) {
+                seq.push_back(tmp->getVal());
+                i++;
+            }
+            tmp = tmp->getNext();
+        }
+
+        int m = v_.size();
+        int n = seq.size();
+
+        if (m > n) {
+            valid = false;
+        }
+
+        if (valid) {
+            list<Element>::iterator itStart = seq.begin();
+            int idx = 0;
+            bool found = false;
+
+            while (itStart != seq.end() && !found) {
+                list<Element>::iterator it = itStart;
+                int k = 0;
+                while (it != seq.end() && k < m) {
+                    if (*it == v_[k]) {
+                        k++;
+                    }
+                    ++it;
+                }
+                if (k == m) {
+                    ans = idx;
+                    found = true;
+                } else {
+                    ++itStart;
+                    idx++;
+                }
+            }
+        }
+    }
+
+    return ans;
+}
+
+int CCL::countBlocks() {
+    int ans = 0;
+    Node* tmp = this->first;
+    bool firstIt = true;
+
+    while (firstIt || tmp != this->first)
+    {
+        firstIt = false;
+
+        ++ans;
+
+        tmp = tmp->getNext();
+    }
+    return ans;
+}
+
+void CCL::print() {
+    printf("Size = %d, Blocks = %d\n", this->lenght, this->countBlocks());
+
+    Node* tmp = this->first;
+    bool firstIt = true;
+
+    printf("[");
+    while (firstIt || tmp != this->first)
+    {
+        firstIt = false;
+        if (tmp->getNext() == this->first)
+        {
+             printf("{%d, %d}", tmp->getVal(), tmp->getQuantity());
+        }
+        else
+        {
+             printf("{%d, %d},", tmp->getVal(), tmp->getQuantity());
+        }
+        tmp = tmp->getNext();
+    }
+    printf("]\n");
+
+}
+
 int CCL::size() {
     return this->lenght;
 }
@@ -137,7 +290,7 @@ int CCL::getIndexFirstConsecutiveOcurrence(std::vector<Element> &v_) {
 
                 if (occurrence)
                 {
-                    ans = (i) + loked;
+                    ans = (i + loked) - 1;
                     found = true;
                 }
             }
@@ -149,10 +302,11 @@ int CCL::getIndexFirstConsecutiveOcurrence(std::vector<Element> &v_) {
         }
         tmp = tmp->getNext();
     }
+
     return ans;
 }
 
-int CCL::searchElement(Element &e_) {
+int CCL::searchElement(Element e_) {
     int ans = 0;
     bool found = false;
     bool first_time = true;
@@ -231,6 +385,64 @@ int CCL::node_size() {
 }
 
 // Modificadores
+
+void CCL::set(int index, Element e_) {
+    bool valid = true;
+
+    if (this->first == nullptr) {
+        valid = false;
+    }
+
+    if (index < 0) {
+        valid = false;
+    }
+
+    if (valid) {
+        if (index >= this->lenght) {
+            valid = false;
+        }
+    }
+
+    if (valid) {
+        vector<Element> seq;
+        seq.reserve(this->lenght);
+
+        Node* tmp = this->first;
+        bool first_time = true;
+
+        while (first_time || tmp != this->first) {
+            first_time = false;
+            int q = tmp->getQuantity();
+            int i = 0;
+            while (i < q) {
+                seq.push_back(tmp->getVal());
+                i++;
+            }
+            tmp = tmp->getNext();
+        }
+
+        seq[index] = e_;
+
+        if (this->first != nullptr) {
+            Node* start = this->first->getNext();
+            while (start != this->first) {
+                Node* nxt = start->getNext();
+                delete start;
+                start = nxt;
+            }
+            delete this->first;
+        }
+
+        this->first = nullptr;
+        this->lenght = 0;
+
+        int i = 0;
+        while (i < (int)seq.size()) {
+            this->push_back(seq[i]);
+            i++;
+        }
+    }
+}
 
 void CCL::push_back(Element e_) {
     if (this->first == NULL)
@@ -387,60 +599,75 @@ void CCL::insertElement(int i_, Element e_) {
 }
 
 
+void CCL::removeAllOcurrences(Element e_) {
+    Node* cur = this->first;
+    bool valid = true;
+
+    if (cur == nullptr) {
+        valid = false;
+    }
+
+    if (valid) {
+        int total_nodes = this->node_size();
+        int processed = 0;
+        Node* new_first = this->first;
+
+        while (processed < total_nodes && this->first != nullptr) {
+            Node* next = cur->getNext();
+
+            if (cur->getVal() == e_) {
+                this->lenght -= cur->getQuantity();
+
+                if (cur->getNext() == cur) {
+                    delete cur;
+                    this->first = nullptr;
+                    new_first = nullptr;
+                } else {
+                    cur->getPrev()->setNext(cur->getNext());
+                    cur->getNext()->setPrev(cur->getPrev());
+                    if (cur == new_first) {
+                        new_first = next;
+                    }
+                    delete cur;
+                }
+            }
+
+            cur = next;
+            processed++;
+        }
+
+        this->first = new_first;
+    }
+}
+
 void CCL::removeFirstOcurrence(Element e_) {
     Node* tmp = this->first;
+    bool firstIt = true;
+    bool erased = false;
 
-    if (tmp->getVal() == e_)
+    while ((firstIt || tmp != this->first) && !erased)
     {
-        if (tmp->getQuantity() == 1)
+        firstIt = false;
+
+        if (tmp->getVal() == e_)
         {
-            if (tmp->getNext() == tmp)
-            {
-                this->first = NULL;
-                
-            }
-            else
+            if (tmp->getQuantity() - 1 == 0)
             {
                 tmp->getPrev()->setNext(tmp->getNext());
                 tmp->getNext()->setPrev(tmp->getPrev());
-                Node* aux = tmp->getPrev();
+
                 delete tmp;
-                this->first = aux->getNext();
-            }
-            --this->lenght;
-        }
-        else
-        {
-            tmp->subsQuantity(1);
-            --this->lenght;
-        }
-    }
-    else
-    {
-        tmp = tmp->getNext();
-        bool deleted = false;
-        while (tmp != this->first && !deleted)
-        {
-            if (tmp->getVal() == e_)
-            {
-                if (tmp->getQuantity() == 1)
-                {
-                    tmp->getNext()->setPrev(tmp->getPrev());
-                    tmp->getPrev()->setNext(tmp->getNext());
-                    delete tmp;
-                }
-                else
-                {
-                    tmp->subsQuantity(1);
-                }
-                --this->lenght;
-                deleted = true;
             }
             else
             {
-                tmp = tmp->getNext();
+                tmp->subsQuantity(1);
             }
+
+            this->lenght--;
+            erased = true;
         }
+        
+        tmp = tmp->getNext();
     }
 }
 
@@ -520,113 +747,106 @@ void CCL::push_back_node(Node* _n_) {
 
 
 void CCL::getLexicographicFusion(CCL _c_) {
-
-    if (this->first == NULL)
-    {
+    if (this->first == NULL) {
         this->first = _c_.first;
         this->lenght = _c_.lenght;
-    }
-    else
-    {
-        int left_remaining = this->node_size(); 
+    } else {
+        int left_remaining = this->node_size();
         int right_remaining = _c_.node_size();
+
         int i = 0, j = 0;
+
         Node* left = this->first;
         Node* right = _c_.first;
         Node* aux;
+        Node* rightFirst = _c_.first;
         
-        
-        while (i < left_remaining && j < right_remaining)
-        {
+        while (i < left_remaining && j < right_remaining) {
 
-            if (left->getVal() < right->getVal())
-            {
+            if (left->getVal() < right->getVal()) {
                 ++i;
                 left = left->getNext();
-            }
-            else if (left->getVal() == right->getVal())
-            {
+            } 
+            else if (left->getVal() == right->getVal()) {
+
                 aux = right->getNext();
                 right->getPrev()->setNext(aux);
                 aux->setPrev(right->getPrev());
-
-
-
                 left->addQuantity(right->getQuantity());
                 this->lenght += right->getQuantity();
-                delete right;
+
                 ++i;
                 ++j;
+
                 left = left->getNext();
                 right = aux;
-                
-            }
-            else
-            {
-                
+            } 
+            else {
+
                 aux = right->getNext();
                 right->getPrev()->setNext(aux);
                 aux->setPrev(right->getPrev());
-
                 left->getPrev()->setNext(right);
                 right->setNext(left);
                 right->setPrev(left->getPrev());
                 left->setPrev(right);
 
-                if (left == this->first)
-                {
-                    this->first = right;
-                }
-                
                 this->lenght += right->getQuantity();
                 right = aux;
+
                 ++left_remaining;
                 ++j;
             }
         }
         
-        while (j < right_remaining)
-        {
+        while (j < right_remaining) {
             aux = right->getNext();
             right->getPrev()->setNext(aux);
             aux->setPrev(right->getPrev());
-
             push_back_node(right);
-
             ++j;
             right = aux;
         }
+
+        this->first = rightFirst;
     }
 }
 
 
 
-List CCL::expand() {
-    List ans;
-    Node* tmp = this->first;
 
-    while (tmp->getNext() != this->first)
-    {
-        for (int i = 0; i < tmp->getQuantity(); i++)
-        {
-            ans.push_back(tmp->getVal());
-        }
-        tmp = tmp->getNext();
+list<Element> CCL::expand() {
+    list<Element> ans;
+    Node* tmp = this->first;
+    bool first_time = true;
+    bool valid = true;
+
+    if (tmp == nullptr) {
+        valid = false;
     }
-    
-    for (int i = 0; i < tmp->getQuantity(); i++)
-    {
-        ans.push_back(tmp->getVal());
+
+    if (valid) {
+        while (first_time || tmp != this->first) {
+            first_time = false;
+            int q = tmp->getQuantity();
+            int i = 0;
+            while (i < q) {
+                ans.push_back(tmp->getVal());
+                i++;
+            }
+            tmp = tmp->getNext();
+        }
     }
 
     return ans;
 }
 
 
-Element CCL::operator[](int i) const{
+Element CCL::operator[](int i) const {
     Node* tmp = this->first;
-    Element ans;
-    if (!(i < 0 || i > this->lenght || this->first == NULL))
+    Element ans{};
+
+    if (!(i < 0 || i >= this->lenght || this->first == NULL))
     {
         if (i == 0)
         {
@@ -635,6 +855,9 @@ Element CCL::operator[](int i) const{
         else
         {
             bool first_loop = true, found = false;
+
+            i++;
+
             while ((tmp != this->first || first_loop) && !found)
             {
                 first_loop = false;
@@ -654,6 +877,24 @@ Element CCL::operator[](int i) const{
         }
     }
     return ans;
+}
+
+void CCL::modifyAllOcurrences(Element _e, Element _aux) {
+    Node* tmp = this->first;
+    bool firstIt = true;
+
+    while (firstIt || tmp != this->first)
+    {
+        firstIt = false;
+
+        if (tmp->getVal() == _e)
+        {
+            tmp->setVal(_aux);
+        }
+
+        tmp = tmp->getNext();
+    }
+    
 }
 
 

@@ -3,6 +3,7 @@
 
 #include "Node.h"
 #include <vector>
+#include <list>
 #include "List.h"
 #include "algorithm"
 
@@ -23,22 +24,29 @@ public:
     // Analizadores
     int size(); // Hecho
     int node_size(); // Hecho
-    int getConsecutiveOcurrences(std::vector<Element> &v_); // Hecho?
-    int getIndexFirstConsecutiveOcurrence(std::vector<Element> &v_); // Hecho?
-    int searchElement(Element &e_); // Hecho?
+    int getConsecutiveOcurrences(std::vector<Element> &v_); // Hecho
+    int getOcurrences(vector<Element>&);
+    int getIndexFirstOcurrence(vector<Element>&);
+    int getIndexFirstConsecutiveOcurrence(std::vector<Element> &v_); // Hecho
+    int searchElement(Element e_); // Hecho
     void displayCCL(); // Hecho
+    void print(); // Hecho
+    int countBlocks(); // Hecho
 
     // Modificadores
+    void set(int index, Element e_);
     void push_back(Element e_); // Hecho
     void push_back(Element e_, int q);
     void push_front(Element e_, int q);
     void push_back_node(Node* _n_); // Hecho
     void insertElement(int i_, Element e_); // Hecho
-    void removeFirstOcurrence(Element e_); // Hecho
+    void removeFirstOcurrence(Element e_);
+    void removeAllOcurrences(Element e_); // Hecho
     void removeAllOcurrence(Element e_); // Hecho
     void removeBlockPosition(int i_); // Hecho
     void getLexicographicFusion(CCL _c_); // Hecho
-    List expand(); // Hecho
+    void modifyAllOcurrences(Element, Element);
+    list<Element> expand(); // Hecho
 
     static void sortVectorCCL(vector<CCL> &v_);
     

@@ -1,32 +1,26 @@
 #include "src/CCL.h"
 #include <iostream>
 #include <vector>
-
+#include <cctype>
 using namespace std;
 
 vector<char> stringToVectorChar(string &s) {
     vector<char> ans;
+    ans.push_back('-');
     for (int i = 0; i < s.size(); i++)
     {
-        ans.push_back(tolower(s[i]));
-    }
-    return ans;
-}
-
-void printListLikeString(List l) {
-    for (int i = 0; i < l.size(); i++)
-    {
-        if (i == 0)
+        if (isalpha(s[i]))
         {
-            char aux = l.at(i);
-            printf("%c", toupper(aux));
+            ans.push_back(tolower(s[i]));
         }
         else
         {
-           printf("%c", l.at(i)); 
+            ans.push_back('-');
         }
+        
     }
-    printf("\n");
+    ans.push_back('-');
+    return ans;
 }
 
 void printVectorInt(vector<int> &in) {
@@ -46,6 +40,7 @@ int main()
     {
         vector<vector<char>> strange;
         vector<CCL> excuses;
+        vector<string> originalExcuses;
 
         string aux;
         for (int i = 0; i < k; i++)
@@ -60,6 +55,7 @@ int main()
         {
             getline(cin , aux);
             excuses.push_back(CCL(stringToVectorChar(aux)));
+            originalExcuses.push_back(aux);
         }
 
         vector<int> suspiciusEach(excuses.size(), 0);
@@ -80,7 +76,7 @@ int main()
         {
             if (suspiciusEach[i] == max)
             {
-                printListLikeString(excuses[i].expand()); 
+                printf("%s\n", originalExcuses[i].c_str());
             }
         }
         printf("\n");
