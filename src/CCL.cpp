@@ -64,7 +64,7 @@ int CCL::getConsecutiveOcurrences(std::vector<Element> &v_) {
             for (int i = 0; i < q; ++i) {
                 Node* aux = tmp;
                 int j = i;
-                std::size_t k = 0;
+                int k = 0;
                 bool valid_ocurrence = true;
 
                 while (valid_ocurrence && k < v_.size()) {
