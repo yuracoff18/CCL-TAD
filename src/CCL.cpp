@@ -2,11 +2,14 @@
 
 // Constructores
 
+// T(n) ∈ O(1)
 CCL::CCL() {
     this->first = NULL;
     this->lenght = 0;
 }
 
+// Peor caso: debe copiar todos los nodos del CCL original T(n) ∈ O(n)
+// Mejor caso: cuando la lista está vacía T(n) ∈ O(1)
 CCL::CCL(const CCL&_c_) {
     this->first = NULL;
     this->lenght = 0;
@@ -26,6 +29,9 @@ CCL::CCL(const CCL&_c_) {
     }
 }
 
+// Peor caso: debe insertar todos los elementos del vector  T(n) ∈ O(n)
+// Mejor caso: vector vacío  T(n) ∈ O(1)
+// De manera general: T(n) ∈ O(n)
 CCL::CCL(std::vector<Element> v_) {
     this->first = NULL;
     this->lenght = 0;
@@ -38,10 +44,25 @@ CCL::CCL(std::vector<Element> v_) {
 
 // Destructor
 
+// T(n) ∈ O(1)
 CCL::~CCL() = default;
 
 // Analizadores
 
+// n = número total de elementos en la lista expandida 
+// m = tamaño del vector v_
+
+// Construcción de la lista seq (expandir el CCL):
+//   - Recorre todos los nodos y mete cada elemento según su cantidad
+//   - T(n) E O(n)
+
+// Búsqueda de subsecuencia dentro de seq:
+//   - En el peor caso, para cada posición de inicio se comparan hasta m elementos
+//   - Peor caso: T(n) E O(n * m)
+//   - Mejor caso: cuando no hay coincidencias y se falla rápido en la comparación inicial
+//                 T(n) E O(n)
+
+// De manera general: T(n) E O(n * m)
 int CCL::getOcurrences(vector<Element> &v_) {
     int ans = 0;
     bool valid = true;
@@ -96,6 +117,23 @@ int CCL::getOcurrences(vector<Element> &v_) {
     return ans;
 }
 
+//     n = número total de elementos en la lista expandida (tamaño de seq)
+//     m = tamaño del vector v_
+
+//   Construcción de la lista seq:
+//   - Recorre todos los nodos y agrega cada elemento según su cantidad
+//   - T(n) ∈ O(n)
+
+//   Búsqueda de la primera ocurrencia:
+//   - En el peor caso:
+//       Para cada posición de inicio itStart se recorre casi todo el resto de la lista
+//       lo que genera que n + (n-1) + (n-2) + ... + 1 ∈ O(n^2)
+//       T(n) ∈ O(n^2)
+
+//   - Mejor caso: cuando la primera ocurrencia se encuentra desde el primer itStart
+//     T(n) ∈ O(n)
+
+// De manera general, la complejidad es: T(n) ∈ O(n^2)
 int CCL::getIndexFirstOcurrence(std::vector<Element> &v_) {
     int ans = -1;
     bool valid = true;
@@ -155,6 +193,8 @@ int CCL::getIndexFirstOcurrence(std::vector<Element> &v_) {
     return ans;
 }
 
+// T(n) ∈ O(n)
+// Recorre todos los nodos de la lista circular exactamente una vez
 int CCL::countBlocks() {
     int ans = 0;
     Node* tmp = this->first;
@@ -171,6 +211,8 @@ int CCL::countBlocks() {
     return ans;
 }
 
+// T(n) ∈ O(n)
+// Recorre todos los nodos de la lista circular una sola vez
 void CCL::print() {
     printf("Size = %d, Blocks = %d\n", this->lenght, this->countBlocks());
 
@@ -195,10 +237,23 @@ void CCL::print() {
 
 }
 
+// T(n) ∈ O(1)
+// Retorna directamente el atributo lenght sin recorrer la lista
 int CCL::size() {
     return this->lenght;
 }
 
+//Mejor caso: cuando la lista está vacía o el vector v_ está vacío, la función retorna 
+//sin hacer ningún recorrido
+//          T(n) ∈ O(1)
+
+//Peor caso: cuando todos los nodos contienen el mismo valor que el primer elemento del vector 
+//El while externo recorre todos los nodos, y para cada nodo se verifican diferentes posiciones iniciales.
+//Cada verificación recorre hasta m elementos de la entrada, donde m es el tamaño del vector y en el peor 
+//caso se realizan verificaciones de longitud m desde cada posible posición en los n nodos.
+//          T(n) ∈ O(n * m)
+
+//De manera general se puede decir: T(n) ∈ O(n * m)
 int CCL::getConsecutiveOcurrences(std::vector<Element> &v_) {
     if (this->first == nullptr || v_.empty()) {
         return 0;
@@ -248,6 +303,18 @@ int CCL::getConsecutiveOcurrences(std::vector<Element> &v_) {
 }
 
 
+//Mejor caso: cuando la lista está vacía, el vector está vacío, o la primera ocurrencia del patrón
+//está al inicio de la lista. La función se retorna sin recorrer toda la lista.
+//          T(n) ∈ O(1)
+
+//Peor caso: cuando la entrada no está en la lista o se encuentra al final. El while externo recorre 
+//todos los nodos, y para cada nodo que coincide con el primer elemento del vector se verifican diferentes 
+//posiciones iniciales.
+//Cada verificación recorre hasta m elementos de la entrada, donde m es el tamaño del vector. En el peor 
+//caso se realizan verificaciones de longitud m desde cada posible posición en los n nodos.
+//          T(n) ∈ O(n * m)
+
+//De manera general se puede decir: T(n) ∈ O(n * m)
 int CCL::getIndexFirstConsecutiveOcurrence(std::vector<Element> &v_) {
     Node* tmp = first;
     bool first_time = true;
@@ -306,6 +373,14 @@ int CCL::getIndexFirstConsecutiveOcurrence(std::vector<Element> &v_) {
     return ans;
 }
 
+/* Peor caso: cuando el elemento NO está en la lista, entonces recorre todos los nodos
+            T(n) ∈ O(n)
+
+ Mejor caso: cuando el elemento está en el primer nodo 
+            T(n) ∈ O(1)
+
+De manera general: T(n) ∈ O(n)
+*/
 int CCL::searchElement(Element e_) {
     int ans = 0;
     bool found = false;
@@ -336,6 +411,13 @@ int CCL::searchElement(Element e_) {
     return ans;
 }
 
+// Peor caso: cuando la lista NO está vacía, entonces recorre todos los nodos una vez
+//            T(n) ∈ O(n)
+
+// Mejor caso: cuando la lista está vacía 
+//            T(n) ∈ O(1)
+
+// De manera general: T(n) ∈ O(n)
 void CCL::displayCCL() {
     bool first_time = true, empty = false;
     Node* tmp = this->first;
@@ -371,6 +453,13 @@ void CCL::displayCCL() {
     printf(" >\n");
 }
 
+// Peor caso: cuando la lista NO está vacía, entonces recorre todos los nodos una vez
+//            T(n) ∈ O(n)
+//
+// Mejor caso: cuando la lista está vacía
+//            T(n) ∈ O(1)
+//
+// De manera general: T(n) ∈ O(n)
 int CCL::node_size() {
     Node* tmp = this->first;
     int ans = 0;
@@ -386,6 +475,14 @@ int CCL::node_size() {
 
 // Modificadores
 
+//Mejor caso: cuando la lista está vacía o el índice es inválido.
+//                  T(n) ∈ O(1)
+
+//Peor caso: cuando la lista no está vacía y el índice es válido. 
+//Expande la lista completa, elimina todos los nodos y reconstruye la estructura
+//                   T(n) ∈ O(n)
+
+//De manera general: T(n) ∈ O(n)
 void CCL::set(int index, Element e_) {
     bool valid = true;
 
@@ -444,6 +541,15 @@ void CCL::set(int index, Element e_) {
     }
 }
 
+// Mejor caso: cuando la lista está vacía o el último nodo tiene el mismo valor e_
+// Solo se hacen asignaciones y operaciones sobre punteros fijas 
+//                     T(n) ∈ O(1)
+
+// Peor caso: cuando la lista no está vacía y el último nodo tiene un valor distinto a e_
+// Se crea un nuevo nodo y se actualizan un número constante de punteros 
+//                     T(n) ∈ O(1)
+
+// De manera general: T(n) ∈ O(1)
 void CCL::push_back(Element e_) {
     if (this->first == NULL)
     {
@@ -471,6 +577,15 @@ void CCL::push_back(Element e_) {
     this->lenght += 1;
 }
 
+//Mejor caso: cuando la lista está vacía o el último nodo tiene el mismo valor e_.  
+//Solo actualiza punteros o incrementa la cantidad del nodo final 
+//                  T(n) ∈ O(1)
+
+//Peor caso: cuando se debe crear un nodo nuevo al final.  
+//La creación del nodo y la actualización de punteros son operaciones constantes 
+//                  T(n) ∈ O(1)
+
+//De manera general: T(n) ∈ O(1)
 void CCL::push_back(Element e_, int q) {
     if (this->first == NULL)
     {
@@ -499,6 +614,15 @@ void CCL::push_back(Element e_, int q) {
     this->lenght += q;
 }
 
+//Mejor caso: cuando la lista está vacía o el primer nodo tiene el mismo valor e_.  
+//Solo modifica cantidad o inicializa la lista, sin recorrer nada 
+//                  T(n) ∈ O(1)
+
+//Peor caso: cuando se debe crear un nuevo nodo y ubicarlo antes del primero.  
+//La creación del nodo y la actualización de punteros son operaciones constantes 
+//                  T(n) ∈ O(1)
+
+//De manera general: T(n) ∈ O(1)
 void CCL::push_front(Element e_, int q) {
     if (this->first == NULL)
     {
@@ -530,6 +654,14 @@ void CCL::push_front(Element e_, int q) {
     this->lenght += q;
 }
 
+// Mejor caso: cuando la lista está vacía o cuando i_ >= lenght y se inserta al final con el push_back 
+//                  T(n) E O(1)
+
+// Peor caso: cuando i_ está dentro del rango [0, lenght-1] y la posición está hacia el final de la lista. 
+// Se recorre la estructura sumando quantities hasta ubicar el nodo correspondiente 
+//                   T(n) E O(n)
+
+// De manera general se puede decir: T(n) E O(n)
 void CCL::insertElement(int i_, Element e_) {
 
     if (this->first == nullptr) {
@@ -598,48 +730,15 @@ void CCL::insertElement(int i_, Element e_) {
     }
 }
 
-
-void CCL::removeAllOcurrences(Element e_) {
-    Node* cur = this->first;
-    bool valid = true;
-
-    if (cur == nullptr) {
-        valid = false;
-    }
-
-    if (valid) {
-        int total_nodes = this->node_size();
-        int processed = 0;
-        Node* new_first = this->first;
-
-        while (processed < total_nodes && this->first != nullptr) {
-            Node* next = cur->getNext();
-
-            if (cur->getVal() == e_) {
-                this->lenght -= cur->getQuantity();
-
-                if (cur->getNext() == cur) {
-                    delete cur;
-                    this->first = nullptr;
-                    new_first = nullptr;
-                } else {
-                    cur->getPrev()->setNext(cur->getNext());
-                    cur->getNext()->setPrev(cur->getPrev());
-                    if (cur == new_first) {
-                        new_first = next;
-                    }
-                    delete cur;
-                }
-            }
-
-            cur = next;
-            processed++;
-        }
-
-        this->first = new_first;
-    }
-}
-
+// Mejor caso: cuando la primera ocurrencia de e_ está en el primer nodo de la lista. 
+// Se elimina o se disminuye la cantidad en la primera iteración del while
+//              T(n) E O(1)
+//
+// Peor caso: cuando e_ no aparece en ningún nodo o está en el último nodo de la lista. 
+// El while recorre todos los nodos una sola vez hasta dar la vuelta completa 
+//              T(n) E O(n)
+//
+// De manera general se puede decir: T(n) E O(n)
 void CCL::removeFirstOcurrence(Element e_) {
     Node* tmp = this->first;
     bool firstIt = true;
@@ -671,6 +770,15 @@ void CCL::removeFirstOcurrence(Element e_) {
     }
 }
 
+// Mejor caso: cuando el elemento e_ sí aparece en la lista.  
+// Igual se debe recorrer toda la lista para eliminar sus ocurrencias 
+//          T(n) E O(n)
+//
+// Peor caso: cuando e_ no aparece en ningún nodo, se recorre toda la lista completa sin
+// eliminar nada, verificando cada nodo una vez 
+//          T(n) E O(n)
+//
+// De manera general se puede decir: T(n) E O(n)
 void CCL::removeAllOcurrence(Element e_) {
     Node* tmp = this->first->getNext();
 
@@ -717,6 +825,16 @@ void CCL::removeAllOcurrence(Element e_) {
     }
 }
 
+//Mejor caso: cuando la lista no está vacía y el índice i_ cae dentro del primer bloque 
+//Se elimina el primer nodo sin necesidad de recorrer la lista 
+//          T(n) E O(1)
+
+//Peor caso: cuando el índice i_ es válido pero corresponde a un bloque que está hacia el final de la 
+//lista. El while recorre bloque por bloque acumulando quantities hasta ubicar el nodo a eliminar, 
+//por lo que en el peor caso pasa por todos los nodos 
+//          T(n) E O(n)
+
+//De manera general se puede decir: T(n) E O(n)
 void CCL::removeBlockPosition(int i_) {
     Node* tmp = this->first;
     int q = 0;
@@ -735,6 +853,7 @@ void CCL::removeBlockPosition(int i_) {
     delete tmp;
 }
 
+//De manera general se puede decir: T(n) E O(1)
 void CCL::push_back_node(Node* _n_) {
     Node* tmp = this->first->getPrev();
 
@@ -746,6 +865,15 @@ void CCL::push_back_node(Node* _n_) {
 }
 
 
+//Mejor caso: cuando la CCL actual está vacía 
+//      T(n) E O(1)
+
+//Peor caso: cuando ambas listas no están vacías.  
+//Se llaman node_size() sobre las dos CCL donde se recorren todos sus nodos
+//y luego los ciclos while fusionan recorriendo todos los nodos de los 2
+//      T(n) E O(n + n)
+
+//De manera general se puede decir: T(n) E O(n)
 void CCL::getLexicographicFusion(CCL _c_) {
     if (this->first == NULL) {
         this->first = _c_.first;
@@ -814,7 +942,14 @@ void CCL::getLexicographicFusion(CCL _c_) {
 
 
 
+//Mejor caso: cuando la lista está vacía  
+//      T(n) E O(1)
 
+//Peor caso: cuando la lista no está vacía.  
+//Recorre todos los nodos y por cada nodo, inserta en la lista de salida de elementos como su quantity
+//insertando n elementos 
+
+//De manera general se puede decir: T(n) E O(n)
 list<Element> CCL::expand() {
     list<Element> ans;
     Node* tmp = this->first;
@@ -841,7 +976,15 @@ list<Element> CCL::expand() {
     return ans;
 }
 
+//Mejor caso: cuando el índice es inválido o cuando i == 0.  
+//si i == 0, se toma directamente el primer valor
+//      T(n) E O(1)
 
+//Peor caso: cuando el índice i es válido y corresponde a una posición hacia el final de la lista.  
+//El while recorre nodo por nodo y el for interno recorre las quantities hasta llegar a la posición de i
+//      T(n) E O(n)
+
+//De manera general se puede decir: T(n) E O(n)
 Element CCL::operator[](int i) const {
     Node* tmp = this->first;
     Element ans{};
@@ -879,6 +1022,15 @@ Element CCL::operator[](int i) const {
     return ans;
 }
 
+//Mejor caso: aunque encuentre la primera ocurrencia de _e_ de inmediato, igual debe recorrer 
+//toda la lista  
+//      T(n) E O(n)
+
+//Peor caso: cuando _e_ no aparece en ningún nodo. También recorre todos los nodos de la lista 
+//verificando uno por uno
+//      T(n) E O(n)
+
+// De manera general se puede decir: T(n) E O(n)
 void CCL::modifyAllOcurrences(Element _e, Element _aux) {
     Node* tmp = this->first;
     bool firstIt = true;
@@ -897,7 +1049,15 @@ void CCL::modifyAllOcurrences(Element _e, Element _aux) {
     
 }
 
+// Mejor caso: cuando el lenght de ambas CCL son diferentes.  
+// Se detecta en la primera comparación y retorna sin recorrer ningún nodo 
+//          T(n) E O(1)
 
+// Peor caso: cuando las longitudes son iguales.  
+// Se recorre nodo por nodo en ambas listas verificando valor y quantity 
+//          T(n) E O(n)
+
+// De manera general se puede decir: T(n) E O(n)
 bool CCL::operator==(const CCL& _c_) const {
     bool ans = true;
     if (this->lenght != _c_.lenght)
@@ -929,6 +1089,15 @@ bool CCL::operator==(const CCL& _c_) const {
     
 }
 
+//Mejor caso: cuando la primera lista está vacía o cuando la segunda lista está vacía   
+//La comparación termina de inmediato sin recorrer nada 
+//          T(n) E O(1)
+
+//Peor caso: cuando ambas listas NO están vacías.  
+//Se recorre completamente cada lista para sumar la quantity de cada nodo.  
+//          T(n) E O(n)
+
+// De manera general se puede decir: T(n) E O(n)
 bool CCL::operator<(const CCL &_c_) const {
     bool ans;
     if (this->first == NULL)
@@ -970,6 +1139,16 @@ bool CCL::operator<(const CCL &_c_) const {
     return ans;
 }
 
+//Mejor caso: cuando la lista actual está vacía.  
+//Se copia la otra CCL y luego se fusiona directamente sin necesidad de recorrer la primera
+//         T(n) E O(n)
+
+//Peor caso: cuando ambas listas tienen elementos.  
+//Se crean dos copias completas y luego la funcion de getLexicographicFusion realiza una
+//fusión lineal.  
+//         T(n) E O(n)
+
+// De manera general se puede decir: T(n) E O(n)
 CCL CCL::operator+(CCL &other) const {
     CCL ans(*this);
     CCL othr_(other);
@@ -978,6 +1157,11 @@ CCL CCL::operator+(CCL &other) const {
     return ans;
 }
 
+//Cuando el vector está completamente desordenado o ordenado.  
+//el sort sigue siendo una operacion con coste de O(n log n) 
+//          T(n) E O(n log n)
+
+// De manera general se puede decir: T(n) E O(n log n)
 void CCL::sortVectorCCL(vector<CCL> &v_) {
     sort(v_.begin(), v_.end());
 }
