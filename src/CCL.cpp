@@ -949,6 +949,8 @@ void CCL::getLexicographicFusion(CCL _c_) {
 //Recorre todos los nodos y por cada nodo, inserta en la lista de salida de elementos como su quantity
 //insertando n elementos 
 
+//      T(n) E O(n)
+
 //De manera general se puede decir: T(n) E O(n)
 list<Element> CCL::expand() {
     list<Element> ans;
